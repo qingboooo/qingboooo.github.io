@@ -10,7 +10,7 @@
   
   <title>
     
-      Hello World | Felix
+      CentOS 安装FTP服务 | Felix
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -138,8 +138,8 @@
 </header>
 
     <div id="article-banner">
-  <h2>Hello World</h2>
-  <p class="post-date">2018-07-06</p>
+  <h2>CentOS 安装FTP服务</h2>
+  <p class="post-date">2016-01-28</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -147,21 +147,92 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+    <section class="markdown-content"><p><strong>1、检查是否已经安装vsftp</strong></p>
+<blockquote>
+<p>rpm -qa | grep vsftpd</p>
+</blockquote>
+<blockquote>
+<p>出现 vsftpd-<em>.</em>.<em>-**</em> 说明已经安装</p>
+</blockquote>
+<p><strong>2、安装vsftpd</strong></p>
+<blockquote>
+<p>通过yum安装：   yum -y install vsftpd<br>通过rpm安装：   rpm -ivh vsftpd-<em>.</em>.<em>-**</em>.rpm<br>设置开机启动：   chkconfig vsftpd on<br>测试是否安装成功：   service vsftpd start</p>
+</blockquote>
+<p><strong>3、关闭selinux</strong></p>
+<blockquote>
+<p>修改配置文件：   vim /etc/selinux/config<br>将SELINUX=enforcing改为SELINUX=disabled.</p>
+</blockquote>
+<blockquote>
+<p>也可以使用下边方法：<br>setsebool allow_ftpd_full_access  1<br>setsebool allow_ftpd_use_cifs 1<br>setsebool allow_ftpd_use_nfs 1<br>setsebool ftp_home_dir  1<br>setsebool httpd_enable_ftp_server 1<br>setsebool tftp_anon_write 1</p>
+<p>service vsftpd restart</p>
+</blockquote>
+<p><strong>4、添加防火墙规则</strong></p>
+<blockquote>
+<p>/sbin/iptables -I INPUT -p tcp –dport 21 -j ACCEPT<br>/etc/rc.d/init.d/iptables save<br>/etc/init.d/iptables restart</p>
+</blockquote>
+<p><strong>5、添加FTP用户</strong></p>
+<blockquote>
+<p>新增FTP用户”ftpuser”: useradd -d /home/ftp -s /sbin/nologin ftpuser<br>设置用户”ftpuser”的密码：passwd ftpuser   （根据提示输入密码）</p>
+</blockquote>
+<p><strong>6、修改vsftpd配置文件</strong></p>
+<blockquote>
+<p>vim /etc/vsftpd/vsftpd.conf</p>
+</blockquote>
+<blockquote>
+<p>找到并修改如下内容：</p>
+<p>anonymous_enable=NO<br>userlist_enable=NO</p>
+</blockquote>
+<blockquote>
+<p>保存退出</p>
+</blockquote>
+<p><strong>7、访问FTP</strong></p>
+<blockquote>
+<p>service vsftpd restart</p>
+<p>使用本地PC访问 ：ftp://服务器ip<br>也可以通过 FileZilla等工具访问</p>
+</blockquote>
 </section>
     <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Linux" >
+    <span class="tag-code">Linux</span>
+  </a>
+
+  <a href="/tags#CentOS" >
+    <span class="tag-code">CentOS</span>
+  </a>
+
+  <a href="/tags#FTP" >
+    <span class="tag-code">FTP</span>
+  </a>
+
+      </div>
     
     <!-- Tags END -->
     <!-- NAV START -->
     
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2016/01/01/Welcome/">
+        <span class="nav-arrow">← </span>
+        
+          Welcome
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2016/03/08/OSGI-导入外部JAR包/">
+        
+          OSGI 导入外部JAR包
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
     <!-- NAV END -->
     <!-- 打赏 START -->
     
@@ -204,7 +275,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Quick-Start"><span class="toc-nav-text">Quick Start</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Create-a-new-post"><span class="toc-nav-text">Create a new post</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Run-server"><span class="toc-nav-text">Run server</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Generate-static-files"><span class="toc-nav-text">Generate static files</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Deploy-to-remote-sites"><span class="toc-nav-text">Deploy to remote sites</span></a></li></ol></li></ol>
+      <ol class="nav">none</ol>
     
   </div>
 </aside>
@@ -214,7 +285,7 @@
 
 <script>
   (function () {
-    var url = 'http://qingbo.ooo/2018/07/06/hello-world/';
+    var url = 'http://qingbo.ooo/2016/01/28/CentOS-安装FTP服务/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -270,7 +341,7 @@
     var gitmentConfig = "qingboooo";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "Hello World",
+        id: "CentOS 安装FTP服务",
         owner: "qingboooo",
         repo: "qingboooo.github.io",
         oauth: {

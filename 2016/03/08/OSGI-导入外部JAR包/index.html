@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="Felix&#39;s Blog">
+  <meta name="keyword" content="JAVA">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      OSGI 导入外部JAR包 | Felix
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Felix</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>OSGI 导入外部JAR包</h2>
+  <p class="post-date">2016-03-08</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p>关于这个问题，网上大多采用先将Jar包转成OSGI的Bundle后再导入使用的方式解决，这里提供一种工作中实践过的另一种解决方法，使用Exlipse的BND插件自动将JAR包OSGI化。<br></p>
+<hr>
+<p>先分析一下出现这个问题的原因，该问题是由OSGI的Bundle依赖导致的，OSGI（开放服务网关）是一套以Java为技术平台的动态模块化规范。Bundle是OSGI的基本单位，它是服务（Service）和组件（Component）的载体，通俗一点理解：Bundle就是模块。在OSGI中各个Bundle之间是相对独立、对外隔离的，因此，正常情况下它们是不能互相访问各自的内部资源的，需要通过OSGI的规范来配置各个Bundle的对外开放的路径或文件才能实现Bundle之间的访问调用。实际上当我们通过Maven向OSGI导入一个外部的JAR包时，我们导入的这个JAR包需要被OSGI化，只有这样JAR包才能被OSGI识别并管理，基本配置如下：</p>
+<p>在pom.xml中添加如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 先添加需要依赖的JAR包 --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;commons-beanutils&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;commons-beanutils&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;1.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 由BND来完成JAR包的OSGI化 --&gt;</span><br><span class="line">&lt;build&gt;</span><br><span class="line">  &lt;plugins&gt;</span><br><span class="line">    &lt;plugin&gt;</span><br><span class="line">      &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;</span><br><span class="line">	  &lt;artifactId&gt;maven-bundle-plugin&lt;/artifactId&gt;</span><br><span class="line">	  &lt;configuration&gt;</span><br><span class="line">		&lt;instructions&gt;</span><br><span class="line">		  &lt;!-- 导入所有可用外部Bundle --&gt;</span><br><span class="line">		  &lt;!-- 过滤掉JAR包内依赖的其它内容 --&gt;</span><br><span class="line">		  &lt;Import-Package&gt;!org.apache.commons.collections.*,*&lt;/Import-Package&gt;</span><br><span class="line">		  &lt;Embed-Directory&gt;lib&lt;/Embed-Directory&gt;</span><br><span class="line">		  &lt;!-- 相应Jar包的artifactId --&gt;</span><br><span class="line">		  &lt;Embed-Dependency&gt;commons-beanutils&lt;/Embed-Dependency&gt;</span><br><span class="line">		  &lt;!-- 工程中Activator的路径 --&gt;</span><br><span class="line">		  &lt;Bundle-Activator&gt;...&lt;/Bundle-Activator&gt;</span><br><span class="line">		&lt;/instructions&gt;</span><br><span class="line">	  &lt;/configuration&gt;</span><br><span class="line">	&lt;/plugin&gt;</span><br><span class="line">  &lt;/plugins&gt;</span><br><span class="line">&lt;/build&gt;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>接下来，详细说明一下OSGI导入导出包的规范：（你可以根据以下规范修改上边的配置，以Apache POI为例）</p>
+<p><br><br><strong>1. 通过类名过滤</strong></p>
+<pre><code>Export-package: org.apache.poi; include=”HSSF*”; exclude=”*impl”
+</code></pre><p>上面的配置只会导出org.apache.poi路径下名称以HSSF开头的类，并且不会导出名称以impl结尾的类。<br>include说明需要导出Package中的哪些类，以逗号分隔，可使用通配符<br>exclude说明禁止导出Package中的哪些类，以逗号分隔，可使用通配符<br>include和exclude用于限制导出，导入时无需限制</p>
+<p><br><br><strong>2. 通过版本过滤</strong></p>
+<pre><code>Export-package: org.apache.poi; version=”3.0” （导出时需明确指定版本号）
+Import-package: org.apache.poi; version=”3.0” （导入大于3.0的版本）
+Import-package: org.apache.poi; version=”[3.0, 3.15]” （可导入3.0与3.15之间的版本）
+</code></pre><p>若Bundle在Export-package中没有指出版本号，则使用默认版本号0.0.0<br>这也就是为什么报错信息中显示版本号是0.0.0的原因了。<br>若想设置可导入所有版本，导入时不添加version限制即可。</p>
+<p><br><br><strong>3. 通过提供者过滤</strong></p>
+<p>OSGI允许开发者根据Bundle名称、版本等信息过滤Package，这种方式被称为“选择提供者”，这种方式很少被应用于生产环境，多用于Bundle的测试，由bundle-symbolic-name和bundle-version来实现。以下配置指明：Bundle A只会导入Bundle-SymbolicName为Bundle B、版本号在1.1.1到2.0.0之间且包路径为com.mypackage.demo的的内容（*注：此处的版本号不是Package的版本号）。<br>Bundle A：</p>
+<pre><code>Bundle-SymbolicName：BundleA
+Import-package: org.apache.poi; bundle-symbolic-name=“BundleB”
+bundle-version=“[1.1.1, 2.0.0)”
+</code></pre><p>Bundle B：</p>
+<pre><code>Bundle-SymbolicName：BundleB
+Emport-Package: com.mypackage.demo
+Bundle-Version=“1.1.1”
+</code></pre><p><br><br><strong>4. 通过自定义属性过滤</strong></p>
+<p>开发人员在导入时可自定义导出属性，而在导入时就可以通过该属性进行过滤。<br>Export-Package: org.apache.poi; filter:=”true”</p>
+<p>对于以上导出内容，下边的导入只有Bundle A和Bundle B能够成功导入：<br>Bundle A:</p>
+<pre><code>Import-Package: org.apache.poi（成功导入，原因下边说明）
+</code></pre><p>Bundle B:</p>
+<pre><code>Import-Package: org.apache.poi; filter:=”true”（成功导入）
+</code></pre><p>Bundle C:</p>
+<pre><code>Import-Package: org.apache.poi; filter:=”false”（导入失败，没有匹配的Bundle）
+</code></pre><p>Bundle A之所以能够导入是因为filter属性并没有被声明为必须的。如果需要将自定义属性声明为必须匹配项，则需要使用mandatory属性。<br>如果将导出改为：<br>Export-Package: org.apache.poi; filter:=”true”; mandatory:=”filter”，<br>则只有Bundle B能够成功导入org.apache.poi包。mandatory的缺省值是optional，    即可选的，因此在没有指定mandatory:=”filter”时，Bundle A能够成功导入。</p>
+<p><br><br><strong>5. 可选导入</strong></p>
+<p>如果导入某个Package是为了实现一些不影响Bundle正常运行的附加功能，比如系统的国际化，不导入国际化对应的Bundle也不会影响系统的运行，只是系统只能以默认语言展示。此时可以使用resolution来指定某一个依赖是否为必须的。<br>Bundle A:</p>
+<pre><code>Import-Package: org.apache.poi; resolution:=”mandatory”
+</code></pre><p>Bundle B:</p>
+<pre><code>Import-Package: org.apache.poi
+</code></pre><p>Bundle C:</p>
+<pre><code>Import-Package: org.apache.poi; resolution:=”optional”
+</code></pre><p>以上配置中的Bundle A和Bundle B时等价的，因为resolution的默认值是mandatory， 对于Bundle A和Bundle B，如果没有任何Bundle导出org.apache.poi包，则会解析失败，而Bundle C则不会，因为他是可选的，如果找不到指定Package则会跳过。</p>
+<p><br><br><strong>6. 动态导入</strong></p>
+<p>存在这样一种应用场景：某个导入包Paceage时必需的，但是提供Package的Bundle并不会在系统启动时被安装，在这种情况下，我们需要在使用时再去导入这个Package，DynamicImport-Package能够满足这样的需求。<br>Bundle A:</p>
+<pre><code>Import-Package: org.apache.poi
+</code></pre><p>Bundle B:</p>
+<pre><code>DynamicImport-Package: org.apache.poi
+</code></pre><p>如果没有任何Bundle导出org.apache.poi包，Bundle A会解析失败，而Bundle不会被影响，但是如果Bundle B在使用到org.apache.poi时，仍然没有任何Bundle导出org.apache.poi包，则会抛出ClassNotFoundException异常。与Import-Package不同的是DynamicImport-Package可以使用通配符，<br>比如：DynamicImport-Package: org.apache.*</p>
+<p><br><br><strong>7. 导出Package的限制</strong></p>
+<p>如果存在多层依赖的情况，则需要在导出时使用uses属性进行说明，比如：</p>
+<pre><code>Export-Package: org.apache.poi; uses:=”javax.servlet.http”
+Import-Package: org.apache.poi
+</code></pre><p>以上配置说明：在导入org.apache.poi包时，会递归导入javax.servlet.http包，因为<br>org.apache.poi包的正常使用依赖于javax.servlet.http包</p>
+<p><br><br><strong>8. 导入整个Bundle</strong></p>
+<p>OSGI支持Bundle级别的导入，可以使用Require-Bundle来声明需要导入的Bundle，这个标志将会导入指定Bundle内所有声明为导出的Package。</p>
+<pre><code>Require-Bundle: Bundle A（Require-Bundle后需指明要导入的Bundle名称）
+</code></pre></section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#OSGI" >
+    <span class="tag-code">OSGI</span>
+  </a>
+
+  <a href="/tags#Maven" >
+    <span class="tag-code">Maven</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2016/01/28/CentOS-安装FTP服务/">
+        <span class="nav-arrow">← </span>
+        
+          CentOS 安装FTP服务
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2016/08/28/使用POI导出Excel/">
+        
+          使用POI导出Excel
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="nav">none</ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://qingbo.ooo/2016/03/08/OSGI-导入外部JAR包/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+     // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+        
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+
+    // qrcode
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+
+    // gitment
+    var gitmentConfig = "qingboooo";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "OSGI 导入外部JAR包",
+        owner: "qingboooo",
+        repo: "qingboooo.github.io",
+        oauth: {
+          client_id: "0bd93eb2f6d6b73ebf01",
+          client_secret: "ebd8e831b38e286a7e249f59cf4421d81528ef6e"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  })();
+</script>
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    Copyright &copy; 2018 | FELIX | Design by <a href="https://github.com/qingboooo">Felix</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

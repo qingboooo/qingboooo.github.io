@@ -10,7 +10,7 @@
   
   <title>
     
-      Tags | Felix
+      Felix
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -138,133 +138,55 @@
 </header>
 
     <div id="article-banner">
-  <h2>Tags</h2>
-  <p class="post-date">标签检索</p>
+  <h2>Archives</h2>
+  <p class="post-date">文章归档</p>
 </div>
-<main class="app-body">
-  <div id="tag-cloud">
+<main class="app-body" id="archives">
+  
+  
+  
+    <section class="time-section">
+  <h1 class="section-year">
+    2016
+  </h1>
+  <div class="section-list">
     
-      <a class="tag2" data-name="tag-Linux">Linux</a>
     
-      <a class="tag2" data-name="tag-CentOS">CentOS</a>
+      <div class="section-list-item">
+        <a href="/2016/09/12/JAVA-实现定时任务的几种方式/" class="archive-title">JAVA 实现定时任务的几种方式</a>
+        <p class="archive-date">09-12</p>
+      </div>
     
-      <a class="tag2" data-name="tag-FTP">FTP</a>
+      <div class="section-list-item">
+        <a href="/2016/08/28/使用POI导出Excel/" class="archive-title">使用POI导出Excel</a>
+        <p class="archive-date">08-28</p>
+      </div>
     
-      <a class="tag3" data-name="tag-Thread">Thread</a>
+      <div class="section-list-item">
+        <a href="/2016/03/08/OSGI-导入外部JAR包/" class="archive-title">OSGI 导入外部JAR包</a>
+        <p class="archive-date">03-08</p>
+      </div>
     
-      <a class="tag1" data-name="tag-Java">Java</a>
+      <div class="section-list-item">
+        <a href="/2016/01/28/CentOS-安装FTP服务/" class="archive-title">CentOS 安装FTP服务</a>
+        <p class="archive-date">01-28</p>
+      </div>
     
-      <a class="tag1" data-name="tag-OSGI">OSGI</a>
-    
-      <a class="tag2" data-name="tag-Maven">Maven</a>
-    
-      <a class="tag3" data-name="tag-Apache POI">Apache POI</a>
+      <div class="section-list-item">
+        <a href="/2016/01/01/Welcome/" class="archive-title">Welcome</a>
+        <p class="archive-date">01-01</p>
+      </div>
     
   </div>
+</section>
   
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-Linux">Linux</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/01/28/CentOS-安装FTP服务/">CentOS 安装FTP服务</a>
-          </li>
-        </ul>
-        
-    </div>
-    
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-CentOS">CentOS</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/01/28/CentOS-安装FTP服务/">CentOS 安装FTP服务</a>
-          </li>
-        </ul>
-        
-    </div>
-    
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-FTP">FTP</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/01/28/CentOS-安装FTP服务/">CentOS 安装FTP服务</a>
-          </li>
-        </ul>
-        
-    </div>
-    
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-Thread">Thread</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/09/12/JAVA-实现定时任务的几种方式/">JAVA 实现定时任务的几种方式</a>
-          </li>
-        </ul>
-        
-    </div>
-    
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-Java">Java</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/09/12/JAVA-实现定时任务的几种方式/">JAVA 实现定时任务的几种方式</a>
-          </li>
-        </ul>
-        
-    </div>
-    
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-OSGI">OSGI</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/03/08/OSGI-导入外部JAR包/">OSGI 导入外部JAR包</a>
-          </li>
-        </ul>
-        
-    </div>
-    
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-Maven">Maven</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/03/08/OSGI-导入外部JAR包/">OSGI 导入外部JAR包</a>
-          </li>
-        </ul>
-        
-    </div>
-    
-    <div class="tag-list">
-      <h3 class="tag-name" id="tag-Apache POI">Apache POI</h3>
-      
-        <ul class="tag-preview">
-          <li>
-            <a href="/2016/08/28/使用POI导出Excel/">使用POI导出Excel</a>
-          </li>
-        </ul>
-        
-    </div>
-    
 </main>
 
 <script>
   (function () {
-    var url = 'http://qingbo.ooo/tags/index.html'
-    $('#article-banner').geopattern(url)
-    $('.header').removeClass('fixed-header')
-
-    var tag = location.hash.replace('#', '')
-    if (tag) {
-      var tagId = "#tag-" + tag;
-      $("html, body").animate({
-        scrollTop: $(tagId).offset().top 
-      }, 400)
-    }
+    var url = 'http://qingbo.ooo/tags/Java/index.html';
+    $('#article-banner').geopattern(url);
+    $('.header').removeClass('fixed-header');
   })();
 </script>
     <div class="scroll-top">

@@ -65,7 +65,7 @@
       
         <li class="list-item">
           
-            <a href="/" class="item-link">Home</a>
+            <a href="/" class="item-link active">Home</a>
           
         </li>
       
@@ -104,7 +104,7 @@
         
           <li class="menu-item">
             
-              <a href="/" class="menu-link">Home</a>
+              <a href="/" class="menu-link mobile-active">Home</a>
             
           </li>
         
@@ -137,108 +137,100 @@
   </div>
 </header>
 
-    <div id="article-banner">
-  <h2>Archives</h2>
-  <p class="post-date">文章归档</p>
+    <main class="app-body">
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2016/03/08/OSGI-导入外部JAR包/">OSGI 导入外部JAR包</a>
+      </h2>
+      <p class="article-date">March 8, 2016</p>
+      
+        
+  <a href="/tags#OSGI" >
+    <span class="tag-code">OSGI</span>
+  </a>
+
+  <a href="/tags#Maven" >
+    <span class="tag-code">Maven</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          关于这个问题，网上大多采用先将Jar包转成OSGI的Bundle后再导入使用的方式解决，这里提供一种工作中实践过的另一种解决方法，使用Exlipse的BND插件自动将JAR包OSGI化。
+
+先分析一下出现这个问题的原因，该问题是由OSGI的Bundle依赖导致的，OSGI（开放服务网关）是一 ...
+        
+      </div>
+      <a class="more" href="/2016/03/08/OSGI-导入外部JAR包/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2016/01/28/CentOS-安装FTP服务/">CentOS 安装FTP服务</a>
+      </h2>
+      <p class="article-date">January 28, 2016</p>
+      
+        
+  <a href="/tags#Linux" >
+    <span class="tag-code">Linux</span>
+  </a>
+
+  <a href="/tags#CentOS" >
+    <span class="tag-code">CentOS</span>
+  </a>
+
+  <a href="/tags#FTP" >
+    <span class="tag-code">FTP</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          1、检查是否已经安装vsftp
+
+rpm -qa | grep vsftpd
+
+
+出现 vsftpd-..-** 说明已经安装
+
+2、安装vsftpd
+
+通过yum安装：   yum -y install vsftpd通过rpm安装：   rpm -ivh vsftpd-..-**.rpm设 ...
+        
+      </div>
+      <a class="more" href="/2016/01/28/CentOS-安装FTP服务/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2016/01/01/Welcome/">Welcome</a>
+      </h2>
+      <p class="article-date">January 1, 2016</p>
+      
+      <div class="article-summary">
+        
+          Welcome to Felix’s Blog! 
+I will share with you what I know and what I am interested in. If you find any omissions or errors in the content I shar ...
+        
+      </div>
+      <a class="more" href="/2016/01/01/Welcome/">Read more</a>
+    </article>
+  
+
+  
+    <div class="guide-pager">
+  
+    <a href="/"><span class="page-arrow">← </span>Prev</a>
+  
+  
+    <a class="unvisible" href="/">Next <span class="page-arrow">→</span></a>
+  
 </div>
-<main class="app-body" id="archives">
-  
-  
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2017
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/2017/06/19/JAVA-8-重复注解/" class="archive-title">JAVA 8 - 重复注解</a>
-        <p class="archive-date">06-19</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/05/30/JAVA-8-Date-and-Time/" class="archive-title">JAVA 8 - Date and Time</a>
-        <p class="archive-date">05-30</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/05/23/JAVA-8-Optional/" class="archive-title">JAVA 8 - Optional</a>
-        <p class="archive-date">05-23</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/05/21/JAVA-8-Streams/" class="archive-title">JAVA 8 - Streams</a>
-        <p class="archive-date">05-21</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/05/11/JAVA-8-Lambda-表达式/" class="archive-title">JAVA 8 - Lambda 表达式</a>
-        <p class="archive-date">05-11</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/05/08/JAVA-8-函数式接口/" class="archive-title">JAVA 8 - 函数式接口</a>
-        <p class="archive-date">05-08</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/05/08/JAVA-8-接口的默认方法和静态接口/" class="archive-title">JAVA 8 - 接口的默认方法和静态接口</a>
-        <p class="archive-date">05-08</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/05/06/JAVA-8-方法引用/" class="archive-title">JAVA 8 - 方法引用</a>
-        <p class="archive-date">05-06</p>
-      </div>
-    
-  </div>
-</section>
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2016
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/2016/09/12/JAVA-实现定时任务的几种方式/" class="archive-title">JAVA 实现定时任务的几种方式</a>
-        <p class="archive-date">09-12</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2016/08/28/使用POI导出Excel/" class="archive-title">使用POI导出Excel</a>
-        <p class="archive-date">08-28</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2016/03/08/OSGI-导入外部JAR包/" class="archive-title">OSGI 导入外部JAR包</a>
-        <p class="archive-date">03-08</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2016/01/28/CentOS-安装FTP服务/" class="archive-title">CentOS 安装FTP服务</a>
-        <p class="archive-date">01-28</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2016/01/01/Welcome/" class="archive-title">Welcome</a>
-        <p class="archive-date">01-01</p>
-      </div>
-    
-  </div>
-</section>
   
 </main>
 
-<script>
-  (function () {
-    var url = 'http://qingbo.ooo/tags/Apache-POI/index.html';
-    $('#article-banner').geopattern(url);
-    $('.header').removeClass('fixed-header');
-  })();
-</script>
+
     <div class="scroll-top">
   <span class="arrow-icon"></span>
 </div>

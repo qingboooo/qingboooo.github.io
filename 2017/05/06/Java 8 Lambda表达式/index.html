@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="Felix&#39;s Blog">
+  <meta name="keyword" content="JAVA">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Java 8 Lambda 表达式 | Felix
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Felix</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Java 8 Lambda 表达式</h2>
+  <p class="post-date">2017-05-06</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="Lambda-表达式"><a href="#Lambda-表达式" class="headerlink" title="Lambda 表达式"></a>Lambda 表达式</h2><h3 id="什么是Lambda"><a href="#什么是Lambda" class="headerlink" title="什么是Lambda"></a>什么是Lambda</h3><p>官方解释：</p>
+<blockquote>
+<p>One issue with anonymous classes is that if the implementation of your anonymous class is very simple, such as an interface that contains only one method, then the syntax of anonymous classes may seem unwieldy and unclear. In these cases, you’re usually trying to pass functionality as an argument to another method, such as what action should be taken when someone clicks a button. Lambda expressions enable you to do this, to treat functionality as method argument, or code as data.</p>
+</blockquote>
+<p>这段解释的重点大概是：匿名内部类的功能代码很简单，大多数情况只会涉及一个方法，但是却需要很多声明代码（即与功能无关的必要代码）；同时可读性差，看起来臃肿不易理解。匿名内部类通常被当作一个方法的入参来使用，即<strong>匿名内部类是一段被当作参数的功能代码</strong>。</p>
+<p>在Java中，匿名内部类提供了一种实现应用程序中可能只出现一次的类的方法。例如：通过匿名内部类实现 Comparator、Runnable 和 ActionListener等函数式接口</p>
+<p>，假如我们现在需要一个比较Person对象的Comparator实现类，那么我们需要编写如下内容。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Collections.sort(personList, <span class="keyword">new</span> Comparator&lt;Person&gt;()&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Person p1, Person p2)</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> p1.getName().compareTo(p2.getName());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>正如上边的代码所展示的，我们使用自定义的compare方法对personList进行了排序。如果此时在不同的功能类中我们需要对personList根据年龄或其他属性进行排序，那么我们还需完成和上边类似的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Collections.sort(personList, <span class="keyword">new</span> Comparator&lt;Person&gt;()&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Person p1, Person p2)</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> p1.getAge() - p2.getAge();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>换句话说，如果我们不使用匿名内部类，  那么我么只能创建相应的实现类，然后将实现类的实例对象作为参数传入方法。这也就是匿名内部类能为我们带来的一种好处，而Lambda是对匿名内部类的进一步优化。</p>
+<h3 id="Lambda表达式语法"><a href="#Lambda表达式语法" class="headerlink" title="Lambda表达式语法"></a>Lambda表达式语法</h3><p>一个Lambda表达式由下表中的三个部分组成。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">输入</th>
+<th style="text-align:center">箭标</th>
+<th style="text-align:center">输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">(int x, int y)</td>
+<td style="text-align:center">-&gt;</td>
+<td style="text-align:center">x + y</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>输入：整个表达式所需的必要参数，类似于普通方法的入参。</li>
+<li>箭标：一种新的标识，类似于三目运算中的 “?” 或 “:” 。</li>
+<li>输出：这部分可以是一个简单的表达式，也可以是一个代码块，将会对输入内容进行运算并返回，类似于方法的方法体。</li>
+</ul>
+<p>看几个简单的语法示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 1. 有输入有输出，一下三种写法是等价的。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">(<span class="keyword">int</span> x, <span class="keyword">int</span> y) -&gt; x + y;</span><br><span class="line"></span><br><span class="line">(<span class="keyword">int</span> x, <span class="keyword">int</span> y) -&gt; &#123;<span class="keyword">return</span> (x + y);&#125;; <span class="comment">// return 可以被省略。</span></span><br><span class="line">    </span><br><span class="line"><span class="function">Integer <span class="title">addition</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line"> 	<span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 2. 有输入无输出。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">(String msg) -&gt; System.out.println(msg);</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 3. 无输入有输出。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">() -&gt; LocalDate.now().toString();</span><br></pre></td></tr></table></figure>
+<h3 id="Lambda示例说明"><a href="#Lambda示例说明" class="headerlink" title="Lambda示例说明"></a>Lambda示例说明</h3><p>基于上边的语法，我们来看看如何具体的使用Lambda。</p>
+<p>首先我们准备一个用于示例的Person实体：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">    <span class="keyword">private</span> String phone;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name, <span class="keyword">int</span> age, String email, String phone)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.email = email;</span><br><span class="line">        <span class="keyword">this</span>.phone = phone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> email;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPhone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> phone;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Person&#123;"</span> + <span class="string">"name='"</span> + name + <span class="string">'\''</span> + <span class="string">", age="</span> + age + <span class="string">", email='"</span></span><br><span class="line">                + email + <span class="string">'\''</span> + <span class="string">", phone='"</span> + phone + <span class="string">'\''</span> + <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们看一下如何通过匿名内部类和Lambda使用Comparator对一个Person集合进行排序。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LambdaDemo</span> </span>&#123;</span><br><span class="line">    List&lt;Person&gt; personList = Arrays.asList(</span><br><span class="line">            <span class="keyword">new</span> Person(<span class="string">"Felix"</span>, <span class="number">21</span>, <span class="string">"aaa@gmail.com"</span>, <span class="string">"18800001001"</span>),</span><br><span class="line">            <span class="keyword">new</span> Person(<span class="string">"Tony"</span>, <span class="number">24</span>, <span class="string">"bbb@gmail.com"</span>, <span class="string">"18800001002"</span>),</span><br><span class="line">            <span class="keyword">new</span> Person(<span class="string">"Bob"</span>, <span class="number">35</span>, <span class="string">"ccc@gmail.com"</span>, <span class="string">"18800001003"</span>),</span><br><span class="line">            <span class="keyword">new</span> Person(<span class="string">"Lily"</span>, <span class="number">16</span>, <span class="string">"ddd@gmail.com"</span>, <span class="string">"18800001004"</span>),</span><br><span class="line">            <span class="keyword">new</span> Person(<span class="string">"Barry"</span>, <span class="number">38</span>, <span class="string">"eee@gmail.com"</span>, <span class="string">"18800001005"</span>)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Sort with inner class */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sortByInnerClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Collections.sort(personList, <span class="keyword">new</span> Comparator&lt;Person&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Person o1, Person o2)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> o1.getAge() - o2.getAge();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">for</span> (Person p : personList) &#123;</span><br><span class="line">            System.out.println(p.toString());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Sort with Lambda */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sortByLambda</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">/* Collections.sort(personList, (Person p1, Person p2) -&gt; p1.getAge() - p2.getAge()); */</span></span><br><span class="line">        <span class="comment">/* Java可通过上下文推断出p1和p2的类型为Person，所以无需另外声明。*/</span></span><br><span class="line">        Collections.sort(personList, (p1, p2) -&gt; p1.getAge() - p2.getAge());</span><br><span class="line">        <span class="comment">/* 这里的System.out::println是一种方法引用，也是Java8的一个特性，会在后边详细说明。*/</span></span><br><span class="line">        personList.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上便是有关Lambda的简单介绍，Lambda使我们的代码更加简洁，但是否易读完全取决于对它的理解程度。Java的工程师似乎并不满意这样的结果，仍然觉得不够简洁，所以在Java 8中还同时引入了函数式接口（其实早就存在）和方法引用等特性，其实在上边的示例中我们已经用到了它们，那么接下来，我们就来了解一下函数式接口和方法引用。</p>
+<hr>
+<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><h3 id="什么是函数式接口"><a href="#什么是函数式接口" class="headerlink" title="什么是函数式接口"></a>什么是函数式接口</h3><p>函数式接口是<strong>只包含一个抽象方法的接口</strong>。它们只能完成一个功能。从Java 8开始，Lambda表达式可以用来表示功能接口的实例。函数式接口可以有任意数量的默认方法。Runnable, Comparable, ActionListener是一些函数式接口的例子。在Java 8之前，我们必须创建匿名内部类对象或实现这些接口。</p>
+<h3 id="Java内置的函数式接口"><a href="#Java内置的函数式接口" class="headerlink" title="Java内置的函数式接口"></a>Java内置的函数式接口</h3><p>Java内置的函数式接口位于java.util.function包中，下边列举了Java 8的4个常用内置函数式接口：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Predicate</td>
+<td>抽象方法：test， 接受单个输入参数T，返回一个Boolean值</td>
+</tr>
+<tr>
+<td>Consumer</td>
+<td>抽象方法：accept， 接受单个输入参数T，但不返回结果</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>抽象方法：apply， 接受单个输入参数T，返回一个R</td>
+</tr>
+<tr>
+<td>Supplier</td>
+<td>抽象方法：get， 不接受输入参数，返回一个T</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Predicate</li>
+</ul>
+<p>Predicate 接收一个泛型值并返回一个布尔值。典型用例是集合的过滤，如下，我们过滤出一个字符串集合中以字符 ‘A’ 开头的元素：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; names = Arrays.asList(<span class="string">"Felix"</span>, <span class="string">"Tony"</span>, <span class="string">"Bob"</span>, <span class="string">"Lily"</span>, <span class="string">"Barry"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Stream API 也是Java 8的特性之一</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 下边的name -&gt; name.startsWith("A")就是一个Predicate的应用场景，只不过它是以Lambda表达式的形式被</span></span><br><span class="line"><span class="comment"> * 使用的, 即传入一个字符串类型（T）的name，然后返回该字符串name是否以'A'开头。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">List&lt;String&gt; namesWithA = names.stream() </span><br><span class="line">				.filter(name -&gt; name.startsWith(<span class="string">"A"</span>))</span><br><span class="line">				.collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Consumer</li>
+</ul>
+<p>Consumer 接受一个泛型值，但不返回任何东西。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; names = Arrays.asList(<span class="string">"Felix"</span>, <span class="string">"Tony"</span>, <span class="string">"Bob"</span>, <span class="string">"Lily"</span>, <span class="string">"Barry"</span>);</span><br><span class="line">names.forEach(name -&gt; System.out.println(<span class="string">"Hello "</span> + name));</span><br></pre></td></tr></table></figure>
+<p>针对Consumer，Java还提供了具体的接口DoubleConsumer, IntConsumer, LongConsumer 和 BiConsumer。</p>
+<p>他们都只接受特定类型的参数，比如IntConsumer 只能传入int型变量作为参数。BiConsumer则算是一种特殊的Comsumer，因为它可以接受两个参数，常被用于遍历Map。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Integer&gt; personMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">personMap.put(<span class="string">"Felix"</span>, <span class="number">21</span>);</span><br><span class="line">personMap.put(<span class="string">"Tony"</span>, <span class="number">24</span>);</span><br><span class="line">personMap.put(<span class="string">"Bob"</span>, <span class="number">35</span>);</span><br><span class="line">personMap.put(<span class="string">"Lily"</span>, <span class="number">16</span>);</span><br><span class="line">personMap.put(<span class="string">"Barry"</span>, <span class="number">38</span>);</span><br><span class="line"> </span><br><span class="line">personMap.forEach((name, age) -&gt; System.out.println(name + <span class="string">" is "</span> + age + <span class="string">" years old."</span>));</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Function</li>
+</ul>
+<p>Function 接受一个泛型值，并返回另一个泛型值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Integer&gt; personMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">personMap.put(<span class="string">"Felix"</span>, <span class="number">21</span>);</span><br><span class="line">personMap.put(<span class="string">"Tony"</span>, <span class="number">24</span>);</span><br><span class="line">personMap.put(<span class="string">"Bob"</span>, <span class="number">35</span>);</span><br><span class="line">personMap.put(<span class="string">"Lily"</span>, <span class="number">16</span>);</span><br><span class="line">personMap.put(<span class="string">"Barry"</span>, <span class="number">38</span>);</span><br><span class="line"></span><br><span class="line">Function age = s -&gt; personMap.get(s);</span><br><span class="line">System.out.println(age.apply(<span class="string">"Felix"</span>));</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Supplier</li>
+</ul>
+<p>Supplier 不接受参数，但会返回一个泛型值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Supplier supplier = () -&gt; <span class="number">100</span>;</span><br><span class="line">System.out.println(supplier.get());</span><br></pre></td></tr></table></figure>
+<h3 id="FunctionalInterface注解"><a href="#FunctionalInterface注解" class="headerlink" title="@FunctionalInterface注解"></a>@FunctionalInterface注解</h3><p>建议所有的函数接口都使用@FunctionalInterface注解。这不仅清楚地传达了这个接口的目的，而且还允许编译器在注解接口不满足条件的情况下生成错误提示。任何带有SAM(单一抽象方法)的接口都是函数式接口，其实现可以视为Lambda表达式。</p>
+<p>注意，Java 8的默认方法不是抽象的，函数式接口可能有多个默认方法和静态方法。 </p>
+<hr>
+<h2 id="方法引用"><a href="#方法引用" class="headerlink" title="方法引用"></a>方法引用</h2><h3 id="什么是方法引用（Method-Reference）"><a href="#什么是方法引用（Method-Reference）" class="headerlink" title="什么是方法引用（Method Reference）"></a>什么是方法引用（Method Reference）</h3><p>我们通常使用Lambda表达式创建匿名函数。然而有时Lambda表达式仅仅是调用现有方法，并没有做其它事情。在这种情况下，方法引用（Method Reference）可以更清楚的通过方法名称直接调用该方法。方法引用可以使Lambda表达式更紧凑、更易于阅读。 </p>
+<p>简而言之，<strong>方法引用就是通过类名或对象名通过固定的语法引用现有的方法，是Lambda表达式的一种简化。</strong></p>
+<h3 id="示例说明"><a href="#示例说明" class="headerlink" title="示例说明"></a>示例说明</h3><p>我们需要一个Employee实体和一个Employee集合用于示例说明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Employee</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> LocalDate birthday;</span><br><span class="line">    <span class="keyword">private</span> Sex gender;</span><br><span class="line">    <span class="keyword">private</span> String emailAddress;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Employee</span><span class="params">(String name, LocalDate birthday, Sex gender, String emailAddress)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.birthday = birthday;</span><br><span class="line">        <span class="keyword">this</span>.gender = gender;</span><br><span class="line">        <span class="keyword">this</span>.emailAddress = emailAddress;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">enum</span> Sex &#123;</span><br><span class="line">        MALE, FEMALE</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> LocalDate.now().getYear() - birthday.getYear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LocalDate <span class="title">getBirthday</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> birthday;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">compareByAge</span><span class="params">(Employee a, Employee b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.birthday.compareTo(b.birthday);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Employee&#123;name='"</span> + name + <span class="string">'\''</span> + <span class="string">", birthday="</span> + birthday + <span class="string">", "</span> +</span><br><span class="line">                <span class="string">"gender="</span> + gender + <span class="string">", emailAddress='"</span> + emailAddress + <span class="string">"\'&#125;"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 数据源 */</span></span><br><span class="line">List&lt;Employee&gt; employees = Arrays.asList(</span><br><span class="line">                <span class="keyword">new</span> Employee(<span class="string">"Felix"</span>, LocalDate.of(<span class="number">1999</span>, <span class="number">6</span>, <span class="number">12</span>),</span><br><span class="line">                        Employee.Sex.MALE, <span class="string">"aaa@gmail.com"</span>),</span><br><span class="line">                <span class="keyword">new</span> Employee(<span class="string">"Tony"</span>, LocalDate.of(<span class="number">1993</span>, <span class="number">4</span>, <span class="number">23</span>),</span><br><span class="line">                        Employee.Sex.MALE, <span class="string">"bbb@gmail.com"</span>),</span><br><span class="line">                <span class="keyword">new</span> Employee(<span class="string">"Bob"</span>, LocalDate.of(<span class="number">1991</span>, <span class="number">11</span>, <span class="number">17</span>),</span><br><span class="line">                        Employee.Sex.MALE, <span class="string">"ccc@gmail.com"</span>),</span><br><span class="line">                <span class="keyword">new</span> Employee(<span class="string">"Lily"</span>, LocalDate.of(<span class="number">1995</span>, <span class="number">1</span>, <span class="number">5</span>),</span><br><span class="line">                        Employee.Sex.MALE, <span class="string">"ddd@gmail.com"</span>),</span><br><span class="line">                <span class="keyword">new</span> Employee(<span class="string">"Barry"</span>, LocalDate.of(<span class="number">1996</span>, <span class="number">9</span>, <span class="number">12</span>),</span><br><span class="line">                        Employee.Sex.MALE, <span class="string">"eee@gmail.com"</span>)</span><br><span class="line">        );</span><br></pre></td></tr></table></figure>
+<p>如果我们需要对一个Employee集合通过年龄进行排序，那么我们则需要如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Collections.sort(employees, (a, b) -&gt; a.getBirthday().compareTo(b.getBirthday()));</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (Employee employee : employees) &#123;</span><br><span class="line">	System.out.println(employee.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在，我们在Employee类中添加用于比较的方法compare()，即我们假设compare方法是Employee类本身就有的一个方法，然后重构以上代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Employee a, Employee b)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a.birthday.compareTo(b.birthday);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过方法引用来重构代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Employee::compare 和 System.out::println 都是一种方法引用 */</span></span><br><span class="line"><span class="comment">/* 符号 '::' 是方法引用的表示，类似于Lambda的 '-&gt;' */</span></span><br><span class="line">Collections.sort(employees, Employee::compare);</span><br><span class="line">employees.forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+<h3 id="不同的方法引用方式"><a href="#不同的方法引用方式" class="headerlink" title="不同的方法引用方式"></a>不同的方法引用方式</h3><p>在Java 8中存在四种方法引用：</p>
+<table>
+<thead>
+<tr>
+<th>引用方式</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>引用静态方法</td>
+<td>ContainingClass::staticMethodName</td>
+</tr>
+<tr>
+<td>引用特定对象的实例方法</td>
+<td>containingObject::instanceMethodName</td>
+</tr>
+<tr>
+<td>引用特定类型的任意对象的实例方法</td>
+<td>ContainingType::methodName</td>
+</tr>
+<tr>
+<td>引用构造器</td>
+<td>ContainingClass::new</td>
+</tr>
+</tbody>
+</table>
+<h4 id="引用静态方法"><a href="#引用静态方法" class="headerlink" title="引用静态方法"></a>引用静态方法</h4><p>如果一个对象存在静态方法，那么可直接通过 ContainingClass::staticMethodName（即：类名::静态方法名）进行调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">employees.sort(Employee::compare);</span><br></pre></td></tr></table></figure>
+<h4 id="引用特定对象的实例方法"><a href="#引用特定对象的实例方法" class="headerlink" title="引用特定对象的实例方法"></a>引用特定对象的实例方法</h4><p>对于特定对象的实例方法，我们可以通过 containingObject::instanceMethodName（即：实例名::实例方法名）进行调用。假设存在一个员工比较器EmployeeProvider。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EmployeeProvider</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">compareByAge</span><span class="params">(Employee a, Employee b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.getName().compareTo(b.getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">EmployeeProvider employeeProvider = <span class="keyword">new</span> EmployeeProvider();</span><br><span class="line">employees.sort(employeeProvider::compareByAge);</span><br></pre></td></tr></table></figure>
+<h4 id="引用特定类型的任意对象的实例方法"><a href="#引用特定类型的任意对象的实例方法" class="headerlink" title="引用特定类型的任意对象的实例方法"></a>引用特定类型的任意对象的实例方法</h4><p>这是一种比较特殊的情况，要求Lambda主体中的方法调用者必须是对应Lambda表达式的入参类型的实例。</p>
+<p>听起来比较绕，举一个简单的例子：</p>
+<p>我们先在Employee类中增加一个compare2方法，然后看一下我们该如何使用方法引用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare2</span><span class="params">(Employee e)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> birthday.compareTo(e.birthday);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 可以看到Lambda的入参是Employee类型的a和b，Lambda主体中的方法调用者是a，它的类型也是Employee。*/</span></span><br><span class="line">employees.sort((a, b) -&gt; a.compare2(b)); <span class="comment">// 使用Lambda的方式</span></span><br><span class="line"><span class="comment">/* 所以这里我们可以把上边的Lambda表达式改写成下边的样子。*/</span></span><br><span class="line">employees.sort(Employee::compare2);  <span class="comment">// 使用方法引用（引用特定类型的任意对象的实例方法）</span></span><br></pre></td></tr></table></figure>
+<h4 id="引用构造器"><a href="#引用构造器" class="headerlink" title="引用构造器"></a>引用构造器</h4><p>我们可以通过 ContainingClass::new（即：类名::new）进行调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Function&lt;String, Person&gt; personFunction1 = name -&gt; <span class="keyword">new</span> Person(name);</span><br><span class="line">personFunction1.apply(<span class="string">"Felix"</span>);</span><br><span class="line"><span class="comment">/* 上下内容是等价的。*/</span></span><br><span class="line">Function&lt;String, Person&gt; personFunction2 = Person::<span class="keyword">new</span>;</span><br><span class="line">personFunction2.apply(<span class="string">"Felix"</span>);</span><br></pre></td></tr></table></figure>
+<p>如果构造函数不需要参数那么对应的函数式接口是Supplier。</p>
+<p>如果构造函数需要一个参数那么对应的函数式接口是Function。</p>
+<p>如果构造函数需要两个参数那么对应的函数式接口是BiFunction。</p>
+<p>如果构造函数需要两个以上参数那么就需要自己创建一个函数式接口了。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>在使用方法引用时，最好先写出Lambda，然后使用Idea自动转换即可。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>关于Lambda的个人总结</p>
+<ol>
+<li>Lambda就是一个匿名函数，它使代码变得简洁</li>
+<li>函数式接口是只包含一个抽象方法的接口</li>
+<li>Lambda是对函数式接口的实现的简化，而方法引用是对Lambda的简化</li>
+<li>Java 8 强如此，还有什么理由不用呢？</li>
+</ol>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Java" >
+    <span class="tag-code">Java</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2016/09/12/Java-实现定时任务的几种方式/">
+        <span class="nav-arrow">← </span>
+        
+          Java 实现定时任务的几种方式
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Lambda-表达式"><span class="toc-nav-text">Lambda 表达式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是Lambda"><span class="toc-nav-text">什么是Lambda</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Lambda表达式语法"><span class="toc-nav-text">Lambda表达式语法</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Lambda示例说明"><span class="toc-nav-text">Lambda示例说明</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#函数式接口"><span class="toc-nav-text">函数式接口</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是函数式接口"><span class="toc-nav-text">什么是函数式接口</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Java内置的函数式接口"><span class="toc-nav-text">Java内置的函数式接口</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#FunctionalInterface注解"><span class="toc-nav-text">@FunctionalInterface注解</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#方法引用"><span class="toc-nav-text">方法引用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是方法引用（Method-Reference）"><span class="toc-nav-text">什么是方法引用（Method Reference）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#示例说明"><span class="toc-nav-text">示例说明</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#不同的方法引用方式"><span class="toc-nav-text">不同的方法引用方式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#引用静态方法"><span class="toc-nav-text">引用静态方法</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#引用特定对象的实例方法"><span class="toc-nav-text">引用特定对象的实例方法</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#引用特定类型的任意对象的实例方法"><span class="toc-nav-text">引用特定类型的任意对象的实例方法</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#引用构造器"><span class="toc-nav-text">引用构造器</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#小结"><span class="toc-nav-text">小结</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#总结"><span class="toc-nav-text">总结</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://qingbo.ooo/2017/05/06/Java 8 Lambda表达式/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+     // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+        
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+
+    // qrcode
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+
+    // gitment
+    var gitmentConfig = "qingboooo";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "Java 8 Lambda 表达式",
+        owner: "qingboooo",
+        repo: "qingboooo.github.io",
+        oauth: {
+          client_id: "0bd93eb2f6d6b73ebf01",
+          client_secret: "9a8b39c57e81848dcaecf6008e9ffe8baa697892"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  })();
+</script>
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    Copyright &copy; 2018 | FELIX | Design by <a href="https://github.com/qingboooo">Felix</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
